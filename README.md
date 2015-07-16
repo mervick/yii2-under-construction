@@ -34,5 +34,9 @@ return [
 ];
 ```
 
+## Preview
+
+![Under Construction Page](http://webstyle.od.ua/test/yii/under-construction.png)
+
 ## License
 [BSD3-Clause](https://raw.githubusercontent.com/mervick/yii2-under-construction/master/LICENSE)
