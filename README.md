@@ -33,6 +33,3 @@ return [
     ],
 ];
 ```
-
-### License
-MIT
