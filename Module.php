@@ -57,8 +57,8 @@ class Module extends \yii\base\Module implements BootstrapInterface
                     ], false);
                 }
             }
+            $app->on(\yii\base\Application::EVENT_AFTER_REQUEST, [$this, 'checkAccess']);
         }
-        $app->on(\yii\base\Application::EVENT_AFTER_REQUEST, [$this, 'checkAccess']);
     }
 
     /**
