@@ -20,7 +20,7 @@ AssetBundle::register($this);
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body  class="external-page sb-l-c sb-r-c onload-check" style="min-height: 0px;">
+<body>
 <?php $this->beginBody() ?>
 <div class="wrap">
     <canvas id="demo-canvas"></canvas>
