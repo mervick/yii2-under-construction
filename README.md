@@ -33,3 +33,6 @@ return [
     ],
 ];
 ```
+
+## License
+[BSD3-Clause](https://raw.githubusercontent.com/mervick/yii2-under-construction/master/LICENSE)
