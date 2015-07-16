@@ -3,15 +3,17 @@
 namespace mervick\underconstruction;
 
 use Yii;
-use yii\base\Module as BaseModule;
+use yii\base\BootstrapInterface;
+use yii\helpers\Inflector;
 use yii\helpers\Url;
+use yii\web\Application as WebApplication;
 
 
 /**
  * Class Module
  * @package mervick\underconstruction
  */
-class Module extends BaseModule
+class Module extends \yii\base\Module implements BootstrapInterface
 {
     /**
      * @var bool this is the on off switch
@@ -32,46 +34,51 @@ class Module extends BaseModule
      */
     public $redirectURL;
 
+    /**
+     * @inheritdoc
+     */
+    public $controllerNamespace = 'mervick\underconstruction\controllers';
+
+    /**
+     * @inheritdoc
+     */
+    public $layout = 'main';
+
 
     /**
      * @inheritdoc
      */
     public function bootstrap($app)
     {
-        if ($this->locked && empty($this->redirectURL)) {
-            if ($app instanceof \yii\web\Application) {
+        if ($this->locked && $app instanceof WebApplication) {
+            if (empty($this->redirectURL)) {
                 $this->redirectURL = Url::to(["/{$this->id}"]);
                 $app->getUrlManager()->addRules([
-                    $this->id => $this->id . '/default/index',
+                    $this->id => $this->id . '/' . $this->defaultRoute . '/index',
                 ], false);
             }
+            $app->on(WebApplication::EVENT_AFTER_REQUEST, [$this, 'checkAccess']);
         }
     }
 
     /**
-     * @inheritdoc
-     */
-    public function init()
-    {
-        if ($this->locked && !$this->checkAccess()) {
-            Yii::$app->getResponse()->redirect($this->redirectURL);
-        }
-
-        parent::init();
-    }
-
-    /**
-     * @return boolean whether the site can be accessed by the current user
+     * Checks whether the site can be accessed by the current user
      */
     protected function checkAccess()
     {
-        $ip = Yii::$app->getRequest()->getUserIP();
-        foreach ($this->allowedIPs as $filter) {
-            if ($filter === '*' || $filter === $ip || (($pos = strpos($filter, '*')) !== false && !strncmp($ip, $filter, $pos))) {
-                return true;
+        $controller = $this->controllerNamespace . '\\' . Inflector::id2camel($this->defaultRoute) . 'Controller';
+        if ($controller::className() !== Yii::$app->requestedAction->controller->className()) {
+            $ip = Yii::$app->getRequest()->getUserIP();
+            foreach ($this->allowedIPs as $filter) {
+                if ($filter === '*' || $filter === $ip || (($pos = strpos($filter, '*')) !== false && !strncmp($ip,
+                            $filter, $pos))
+                ) {
+                    return;
+                }
             }
-        }
 
-        return false;
+            Yii::$app->getResponse()->redirect($this->redirectURL);
+        }
     }
+
 }
