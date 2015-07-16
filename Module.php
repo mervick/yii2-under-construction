@@ -6,7 +6,6 @@ use Yii;
 use yii\base\BootstrapInterface;
 use yii\helpers\Inflector;
 use yii\helpers\Url;
-use yii\web\Application as WebApplication;
 
 
 /**
@@ -44,40 +43,42 @@ class Module extends \yii\base\Module implements BootstrapInterface
      */
     public $layout = 'main';
 
-
     /**
      * @inheritdoc
      */
     public function bootstrap($app)
     {
-        if ($this->locked && $app instanceof WebApplication) {
+        if ($this->locked) {
             if (empty($this->redirectURL)) {
-                $this->redirectURL = Url::to(["/{$this->id}"]);
-                $app->getUrlManager()->addRules([
-                    $this->id => $this->id . '/' . $this->defaultRoute . '/index',
-                ], false);
+                if ($app instanceof \yii\web\Application) {
+                    $this->redirectURL = Url::to(["/{$this->id}"]);
+                    $app->getUrlManager()->addRules([
+                        $this->id => $this->id . '/' . $this->defaultRoute . '/index',
+                    ], false);
+                }
             }
-            $app->on(WebApplication::EVENT_AFTER_REQUEST, [$this, 'checkAccess']);
         }
+        $app->on(\yii\base\Application::EVENT_AFTER_REQUEST, [$this, 'checkAccess']);
     }
 
     /**
-     * Checks whether the site can be accessed by the current user
+     * @return boolean whether the site can be accessed by the current user
      */
     protected function checkAccess()
     {
-        $controller = $this->controllerNamespace . '\\' . Inflector::id2camel($this->defaultRoute) . 'Controller';
-        if ($controller::className() !== Yii::$app->requestedAction->controller->className()) {
-            $ip = Yii::$app->getRequest()->getUserIP();
-            foreach ($this->allowedIPs as $filter) {
-                if ($filter === '*' || $filter === $ip || (($pos = strpos($filter, '*')) !== false && !strncmp($ip,
-                            $filter, $pos))
-                ) {
-                    return;
+        if (Yii::$app instanceof \yii\web\Application && $this->locked) {
+            $controller = $this->controllerNamespace . '\\' . Inflector::id2camel($this->defaultRoute) . 'Controller';
+            if ($controller::className() !== Yii::$app->requestedAction->controller->className()) {
+                $ip = Yii::$app->getRequest()->getUserIP();
+                foreach ($this->allowedIPs as $filter) {
+                    if ($filter === '*' || $filter === $ip || (($pos = strpos($filter, '*')) !== false && !strncmp($ip,
+                                $filter, $pos))
+                    ) {
+                        return;
+                    }
                 }
+                Yii::$app->getResponse()->redirect($this->redirectURL);
             }
-
-            Yii::$app->getResponse()->redirect($this->redirectURL);
         }
     }
 
