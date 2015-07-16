@@ -1,0 +1,22 @@
+{
+    "name": "mervick/yii2-under-construction",
+    "description": "Yii2 Under Construction Module",
+    "type": "yii2-extension",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andrey Izman",
+            "email": "izmanw@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.4.0",
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "mervick\\underconstruction\\": ""
+        }
+    }
+}
