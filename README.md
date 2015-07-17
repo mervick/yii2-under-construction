@@ -22,6 +22,8 @@ return [
             'allowedIPs' => ['127.0.0.1', '::1'],
             // change this to your namespace, if you want use your own controller
             'controllerNamespace' => 'mervick\underconstruction\controllers', 
+            // if you want use your views
+            'viewPath' => '@alias/to/viewPath',
             // default layout
             'layout' => 'main', 
             // if you want redirect to external website, default is null
@@ -35,7 +37,6 @@ return [
 ```
 
 ## Preview
-
 ![Under Construction Page](http://webstyle.od.ua/test/yii/under-construction.png)
 
 ## License
