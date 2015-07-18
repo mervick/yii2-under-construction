@@ -50,9 +50,9 @@ class Module extends \yii\base\Module implements BootstrapInterface
     public $i18nPath;
 
     /**
-     * @var string source language
+     * @var string language
      */
-    public $sourceLanguage;
+    public $language;
 
 
     /**
@@ -109,7 +109,7 @@ class Module extends \yii\base\Module implements BootstrapInterface
     {
         Yii::$app->i18n->translations['modules/underconstruction'] = [
             'class' => 'yii\i18n\PhpMessageSource',
-            'sourceLanguage' => $this->sourceLanguage ?: Yii::$app->sourceLanguage,
+            'sourceLanguage' => $this->language ?: Yii::$app->language,
             'basePath' => $this->i18nPath ?: (__DIR__ . '/messages'),
             'fileMap' => [
                 'modules/underconstruction' => 'underconstruction.php',
