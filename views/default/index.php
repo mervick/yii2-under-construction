@@ -2,7 +2,7 @@
 
 use Yii;
 use yii\helpers\Html;
-$this->title = Html::encode(Yii::t('modules/underconstruction', 'Site Under Construction!'));
+$this->title = Yii::t('modules/underconstruction', 'Site Under Construction!');
 ?>
 <div class="content">
     <div class="logo"></div>
