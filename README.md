@@ -1,4 +1,6 @@
 # Yii2 Under Construction Module
+[![Analytics](https://ga-beacon.appspot.com/UA-65295275-1/yii2-under-construction)](https://github.com/igrigorik/ga-beacon)
+
 The simple yii2 extension which can disallow access to website.
 
 ## Installation
