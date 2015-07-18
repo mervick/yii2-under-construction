@@ -110,7 +110,7 @@ class Module extends \yii\base\Module implements BootstrapInterface
         Yii::$app->i18n->translations['modules/underconstruction'] = [
             'class' => 'yii\i18n\PhpMessageSource',
             'sourceLanguage' => $this->sourceLanguage ?: Yii::$app->sourceLanguage,
-            'basePath' => $this->i18nPath ?: __DIR__ . '/messages',
+            'basePath' => $this->i18nPath ?: (__DIR__ . '/messages'),
             'fileMap' => [
                 'modules/underconstruction' => 'underconstruction.php',
             ],
