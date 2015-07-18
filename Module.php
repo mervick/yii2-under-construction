@@ -6,6 +6,7 @@ use Yii;
 use yii\base\BootstrapInterface;
 use yii\helpers\Inflector;
 use yii\helpers\Url;
+use yii\web\Application as WebApplication;
 
 
 /**
@@ -44,42 +45,73 @@ class Module extends \yii\base\Module implements BootstrapInterface
     public $layout = 'main';
 
     /**
+     * @var string the path where to find i18n translations
+     */
+    public $i18nPath;
+
+    /**
+     * @var string source language
+     */
+    public $sourceLanguage;
+
+
+    /**
      * @inheritdoc
      */
     public function bootstrap($app)
     {
         if ($this->locked) {
             if (empty($this->redirectURL)) {
-                if ($app instanceof \yii\web\Application) {
+                if ($app instanceof WebApplication) {
                     $this->redirectURL = Url::to(["/{$this->id}"]);
                     $app->getUrlManager()->addRules([
                         $this->id => $this->id . '/' . $this->defaultRoute . '/index',
                     ], false);
                 }
             }
-            $app->on(\yii\base\Application::EVENT_AFTER_REQUEST, [$this, 'checkAccess']);
+            $app->on(WebApplication::EVENT_AFTER_REQUEST, [$this, 'checkAccess']);
         }
     }
 
     /**
-     * @return boolean whether the site can be accessed by the current user
+     * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
+        $this->registerTranslations();
+    }
+
+    /**
+     * Checks whether the site can be accessed by the current user
+     * @return boolean
      */
     protected function checkAccess()
     {
-        if (Yii::$app instanceof \yii\web\Application && $this->locked) {
-            $controller = $this->controllerNamespace . '\\' . Inflector::id2camel($this->defaultRoute) . 'Controller';
-            if ($controller::className() !== Yii::$app->requestedAction->controller->className()) {
-                $ip = Yii::$app->getRequest()->getUserIP();
-                foreach ($this->allowedIPs as $filter) {
-                    if ($filter === '*' || $filter === $ip || (($pos = strpos($filter, '*')) !== false && !strncmp($ip,
-                                $filter, $pos))
-                    ) {
-                        return;
-                    }
+        $controller = $this->controllerNamespace . '\\' . Inflector::id2camel($this->defaultRoute) . 'Controller';
+        if ($controller::className() !== Yii::$app->requestedAction->controller->className()) {
+            $ip = Yii::$app->getRequest()->getUserIP();
+            foreach ($this->allowedIPs as $filter) {
+                if ($filter === '*' || $filter === $ip || (($pos = strpos($filter, '*')) !== false && !strncmp($ip,
+                            $filter, $pos))
+                ) {
+                    return;
                 }
-                Yii::$app->getResponse()->redirect($this->redirectURL);
             }
+            Yii::$app->getResponse()->redirect($this->redirectURL);
         }
+    }
+
+    /**
+     * Register i18n translations
+     */
+    public function registerTranslations()
+    {
+        Yii::$app->i18n->translations['modules/underconstruction'] = [
+            'class' => 'yii\i18n\PhpMessageSource',
+            'sourceLanguage' => $this->sourceLanguage ?: Yii::$app->sourceLanguage,
+            'basePath' => $this->i18nPath ?: __DIR__ . '/messages',
+        ];
     }
 
 }
